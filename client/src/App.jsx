@@ -3,6 +3,7 @@ import Card from "./Card.jsx";
 
 
 function App() {
+  const [cards, setCards] = useState([]);
   const [filter, setFilter] = useState("Todas");
   const [search, setSearch] = useState("");
   const [error, setError] = useState(null);
