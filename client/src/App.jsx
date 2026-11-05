@@ -5,16 +5,26 @@ import Card from "./Card.jsx";
 function App() {
   const [filter, setFilter] = useState("Todas");
   const [search, setSearch] = useState("");
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [randomCard, setRandomCard] = useState(null);
   const [sorted, setSorted] = useState(false);
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/cartas")
-      .then((res) => res.json())
+    fetch("http://localhost:3000/api/cartass")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Erro HTTP ${res.status}`);
+        }
+        return res.json()
+      })
       .then((data) => {
-        setCards(data)
+        setCards(data);
+        setError(null);
+      })
+      .catch((err) => {
+        setError(err.message === "Falha em fazer o fetch" ? "Servidor desligado" : err.message);
       })
       .finally(() => {
         setLoading(false);
@@ -34,6 +44,14 @@ function App() {
 
   if (loading) {
     return <main><p>A carregar...</p></main>
+  }
+  if(error) {
+    return (
+      <main>
+        <h1>A minha coleção</h1>
+        <p style={{ color: "red"}}>Erro ao carregar cartas: {error}</p>
+      </main>
+    );
   }
   return (
     <main>
