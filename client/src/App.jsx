@@ -5,6 +5,7 @@ import Card from "./Card.jsx";
 function App() {
   const [filter, setFilter] = useState("Todas");
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const [randomCard, setRandomCard] = useState(null);
   const [sorted, setSorted] = useState(false);
   const [cards, setCards] = useState([]);
@@ -12,7 +13,12 @@ function App() {
   useEffect(() => {
     fetch("http://localhost:3000/api/cartas")
       .then((res) => res.json())
-      .then((data) => setCards(data));
+      .then((data) => {
+        setCards(data)
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   }, []);
   let visible = cards
     .filter((card) => filter === "Todas" || card.type === filter)
@@ -26,6 +32,9 @@ function App() {
     setRandomCard(cards[Math.floor(Math.random() * cards.length)]);
   }
 
+  if (loading) {
+    return <main><p>A carregar...</p></main>
+  }
   return (
     <main>
       <h1>A minha coleção</h1>
