@@ -13,7 +13,7 @@ function App() {
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/cartass")
+    fetch("http://localhost:3000/api/cartas")
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Erro HTTP ${res.status}`);
