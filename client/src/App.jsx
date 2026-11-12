@@ -11,6 +11,9 @@ function App() {
   const [randomCard, setRandomCard] = useState(null);
   const [sorted, setSorted] = useState(false);
   const [cards, setCards] = useState([]);
+  const [name, setName] = useState("");
+  const [type, setType] = useState("Criatura");
+  const [attack, setAttack] = useState(0);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/cartas")
@@ -31,6 +34,24 @@ function App() {
         setLoading(false);
       })
   }, []);
+  function handleSubmit(e) {
+    e.preventDefault();
+    const newCard = {
+      name,
+      type,
+      attack: Number(attack) || 0,
+      defense: 0,
+    };
+    setCards([...cards, newCard]);
+    setName("");
+    setType("Criatura");
+    setAttack(0);
+  fetch("http://localhost:3000/api/cartas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, type, attack}),
+    })
+  }
   let visible = cards
     .filter((card) => filter === "Todas" || card.type === filter)
     .filter((card) => card.name.toLowerCase().includes(search.toLowerCase()));
@@ -57,7 +78,25 @@ function App() {
   return (
     <main>
       <h1>A minha coleção</h1>
-
+      <form onSubmit={handleSubmit}>
+        <h2>Adicionar carta</h2>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nome da carta"
+        />
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="Criatura">Criatura</option>
+          <option value="Feitiço">Feitiço</option>
+        </select>
+        <input
+          type="number"
+          value={attack}
+          onChange={(e) => setAttack(e.target.value)}
+          placeholder="Ataque"
+        />
+        <button type="submit">Adicionar</button>
+      </form>
       <p>
         Tenho {cards.length} cartas · a mostrar {visible.length}
       </p>
