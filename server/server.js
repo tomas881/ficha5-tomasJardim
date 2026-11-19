@@ -1,18 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const fs = require("fs");
+
 const app = express();
 const PORT = 3000;
 
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
-const cards = [
-  { name: "Dragão de Cobalto", type: "Criatura", attack: 7, defense: 5 },
-  { name: "Guardiã das Marés", type: "Criatura", attack: 4, defense: 8 },
-  { name: "Rito de Ferro", type: "Feitiço", attack: 0, defense: 0 },
-  { name: "Sentinela de Âmbar", type: "Criatura", attack: 6, defense: 6 },
-  { name: "Eco do Vazio", type: "Feitiço", attack: 0, defense: 0 },
-];
+const cards = JSON.parse(fs.readFileSync("./cartas.json", "utf-8"));
 
 function page(title, body) {
   return `<!DOCTYPE html>
@@ -82,13 +78,15 @@ app.get("/api/cartas", (req, res) => {
 
 app.post("/api/cartas", (req, res) =>{
   const { name, type, attack} = req.body;
+
   const card = {
-    name,
+    name: name.trim(),
     type,
     attack: Number(attack) || 0,
     defense: 0,
   };
   cards.push(card);
+  fs.writeFileSync("./cartas.json", JSON.stringify(cards, null, 2));
   res.status(201).json(card);
 });
 
