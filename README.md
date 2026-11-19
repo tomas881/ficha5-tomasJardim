@@ -1,20 +1,16 @@
-## Como executar
+## API
  
-É necessário utilizar dois terminais em simultâneo:
+| Método | URL | O que recebe (Body) | O que responde | Status Codes |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/cartas` | Nada | Array JSON com todas as cartas da coleção | `200 OK` |
+| `POST` | `/api/cartas` | JSON `{ "name": "...", "type": "...", "attack": 0 }` | Objeto JSON da carta criada ou mensagem de erro | `201 Created` (sucesso) / `400 Bad Request` (falta nome ou tipo) |
  
-1. **Servidor (Backend):**
-   ```bash
-   node --watch server.js
-   Executa em http://localhost:3000
+## Perguntas da Ficha 5
  
-cd client
-npm run dev
-# Executa em http://localhost:5173
-
-### Resposta à Pergunta 3
-**Quem bloqueou: o server ou o browser? Como é que sabes?**  
-**Resposta:** Quem bloqueou o pedido foi o **browser**. Sabemos isto porque o servidor recebeu o pedido HTTP e respondeu normalmente (como é possível verificar nos logs do terminal do servidor). No entanto, como a resposta do servidor não continha o cabeçalho `Access-Control-Allow-Origin`, o browser aplicou a política de segurança Same-Origin Policy (SOP) e impediu que o código JavaScript da aplicação React acedesse aos dados devolvidos.
+**3. Quando acrescentas uma carta, o Network tab mostra dois requests para `/api/cartas`. Qual é o primeiro, quem o manda, e porque é que, antes do pacote `cors`, o `console.log` da rota POST nunca aparecia no terminal?**
+O primeiro pedido é um `OPTIONS` (*preflight request*), enviado automaticamente pelo browser antes do `POST` para verificar se o servidor autoriza pedidos de outra origem (`localhost:5173`) com o cabeçalho `Content-Type: application/json`. Antes de instalar o pacote `cors`, o servidor não respondia adequadamente a este pedido `OPTIONS`, pelo que o browser bloqueava o pedido por segurança e nunca chegava a enviar o `POST`.
  
-### Resposta à Pergunta 4
-**Compara com a tua resposta 4 da Ficha 3. Quantos requests faz agora a app React ao abrir e ao filtrar? Onde vivem os dados, e onde é construído o HTML?**  
-**Resposta:** Agora, a app React faz apenas **1 pedido HTTP** ao abrir a página (para obter os dados em JSON) e **0 pedidos** ao filtrar, pois a filtragem é feita inteiramente no cliente. Os dados vivem no servidor (base de dados/memória), mas são transferidos e mantidos no estado do React (`useState`). O HTML é agora construído no **browser (client-side rendering)** através dos componentes React, ao contrário da Ficha 3 onde o HTML vinha já construído pelo servidor.
+**4. Nas três versões da aula (só `setCards`, `POST` sem ficheiro, `POST` com `cartas.json`), onde vivia a carta nova, e o que a apagava?**
+* **Só `setCards`:** A carta vivia apenas na memória do browser (estado do React) e desaparecia ao atualizar a página (`F5`).
+* **`POST` sem ficheiro:** A carta vivia na memória RAM do servidor (no array `cards` do Node.js); resistia ao `F5` no browser, mas apagava-se ao reiniciar o servidor.
+* **`POST` com `cartas.json`:** A carta passou a ser gravada em disco no ficheiro `cartas.json`, mantendo-se guardada mesmo depois de atualizar a página ou reiniciar o servidor (só se apaga editando ou eliminando o ficheiro).
