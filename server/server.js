@@ -72,13 +72,17 @@ app.get("/agora", (req, res) => {
 });
 
 app.get("/api/cartas", (req, res) => {
- res.json(cards);
-  
+  res.json(cards);
+
 });
 
-app.post("/api/cartas", (req, res) =>{
-  const { name, type, attack} = req.body;
+app.post("/api/cartas", (req, res) => {
+  const { name, type, attack } = req.body;
 
+  if (!name || !name.trim() || !type || !type.trim()) {
+    return res.status(400).json({ error: "Nome e tipo são obrigatórios" });
+  }
+  
   const card = {
     name: name.trim(),
     type,
@@ -91,7 +95,7 @@ app.post("/api/cartas", (req, res) =>{
 });
 
 app.use((req, res) => {
-  res.set("Access-Control-Allow-Origin", "http://localhost:5173");
+
   res.status(404).send(page(
     "404 — não encontrado",
     `<p>Não existe nada em <code>${req.url}</code>.</p>

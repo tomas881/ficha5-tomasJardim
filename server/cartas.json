@@ -30,9 +30,9 @@
     "defense": 0
   },
   {
-    "name": "ola",
+    "name": "f",
     "type": "Criatura",
-    "attack": -3,
+    "attack": 2,
     "defense": 0
   }
 ]

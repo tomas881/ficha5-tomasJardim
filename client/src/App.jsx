@@ -16,6 +16,8 @@ function App() {
   const [type, setType] = useState("Criatura");
   const [attack, setAttack] = useState(0);
 
+  const [formError, setFormError] = useState(null);
+
   useEffect(() => {
     fetch("http://localhost:3000/api/cartas")
       .then((res) => {
@@ -37,7 +39,7 @@ function App() {
   }, []);
   function handleSubmit(e) {
     e.preventDefault();
-
+    setFormError(null);
     fetch("http://localhost:3000/api/cartas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,7 +47,7 @@ function App() {
     })
       .then((res) => {
         if (!res.ok) {
-          throw new Error(`Erro HTTP ${res.status}`);
+          throw new Error(` HTTP ${res.status}`);
         }
         return res.json();
       })
@@ -54,6 +56,9 @@ function App() {
         setName("");
         setType("Criatura");
         setAttack(0);
+      })
+      .catch((err) => {
+        setFormError(err.message);
       });
   }
   let visible = cards
@@ -101,6 +106,8 @@ function App() {
         />
         <button type="submit">Adicionar</button>
       </form>
+
+      {formError && <p style={{color: "red"}}>{formError}</p>}
       <p>
         Tenho {cards.length} cartas · a mostrar {visible.length}
       </p>
