@@ -11,6 +11,7 @@ function App() {
   const [randomCard, setRandomCard] = useState(null);
   const [sorted, setSorted] = useState(false);
   const [cards, setCards] = useState([]);
+
   const [name, setName] = useState("");
   const [type, setType] = useState("Criatura");
   const [attack, setAttack] = useState(0);
@@ -36,21 +37,24 @@ function App() {
   }, []);
   function handleSubmit(e) {
     e.preventDefault();
-    const newCard = {
-      name,
-      type,
-      attack: Number(attack) || 0,
-      defense: 0,
-    };
-    setCards([...cards, newCard]);
-    setName("");
-    setType("Criatura");
-    setAttack(0);
-  fetch("http://localhost:3000/api/cartas", {
+
+    fetch("http://localhost:3000/api/cartas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, type, attack}),
+      body: JSON.stringify({ name, type, attack }),
     })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Erro HTTP ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((savedCard) => {
+        setCards([...cards, savedCard]);
+        setName("");
+        setType("Criatura");
+        setAttack(0);
+      });
   }
   let visible = cards
     .filter((card) => filter === "Todas" || card.type === filter)
@@ -67,11 +71,11 @@ function App() {
   if (loading) {
     return <main><p>A carregar...</p></main>
   }
-  if(error) {
+  if (error) {
     return (
       <main>
         <h1>A minha coleção</h1>
-        <p style={{ color: "red"}}>Erro ao carregar cartas: {error}</p>
+        <p style={{ color: "red" }}>Erro ao carregar cartas: {error}</p>
       </main>
     );
   }
